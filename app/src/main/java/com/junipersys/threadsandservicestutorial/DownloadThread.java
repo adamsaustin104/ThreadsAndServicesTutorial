@@ -1,4 +1,4 @@
-package com.junipersys.threadsandservicestutorial.outdated;
+package com.junipersys.threadsandservicestutorial;
 
 import android.os.Looper;
 

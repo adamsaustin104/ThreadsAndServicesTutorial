@@ -1,12 +1,10 @@
-package com.junipersys.threadsandservicestutorial.outdated;
+package com.junipersys.threadsandservicestutorial;
 
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.os.Message;
 import android.support.annotation.Nullable;
-
-import com.junipersys.threadsandservicestutorial.MainActivity;
 
 public class DownloadService extends Service {
     private static final String TAG = DownloadService.class.getCanonicalName();

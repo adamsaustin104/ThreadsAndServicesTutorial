@@ -29,7 +29,7 @@ public class ActivityHandler extends Handler {
             }
         } else if (msg.arg1 == 1){
             if(msg.arg2 == 1){
-                mMainActivity.changPlayButtonText("PLAY");
+                mMainActivity.changPlayButtonText("PAUSE");
             } else {
                 Message message = Message.obtain();
                 message.arg1 = 1;
@@ -38,8 +38,10 @@ public class ActivityHandler extends Handler {
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
-                mMainActivity.changPlayButtonText("PAUSE ");
+                mMainActivity.changPlayButtonText("PLAY");
             }
+        } else if (msg.arg1 ==3 ){
+            mMainActivity.changPlayButtonText("PLAY");
         }
     }
 }

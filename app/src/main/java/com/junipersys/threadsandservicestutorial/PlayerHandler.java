@@ -13,6 +13,9 @@ public class PlayerHandler extends Handler {
 
     @Override
     public void handleMessage(Message msg) {
+        if(msg.replyTo != null){
+            mPlayerService.mActivityMessenger = msg.replyTo;
+        }
         switch (msg.arg1){
             case 0:
                 mPlayerService.play();
