@@ -20,7 +20,7 @@ public class DownloadIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
-        String song = intent.getStringExtra(MainActivity.KEY_SONG);
+        String song = intent.getStringExtra(MainActivity.EXTRA_SONG);
         downloadSong(song);
     }
 

@@ -1,14 +1,15 @@
 package com.junipersys.threadsandservicestutorial;
 
-import android.app.IntentService;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.net.Uri;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -21,10 +22,15 @@ import android.widget.Toast;
 import com.junipersys.threadsandservicestutorial.adapters.PlaylistAdapter;
 import com.junipersys.threadsandservicestutorial.models.Song;
 
-public class MainActivity extends AppCompatActivity {
+import java.net.URI;
 
-    public static final String KEY_SONG = "song";
+public class MainActivity extends AppCompatActivity {
+    public static final String EXTRA_LIST_POSITION = "EXTRA_POSITION";
+    public static final String TAG = MainActivity.class.getSimpleName();
+    public static final String EXTRA_SONG = "SONG";
     public static final String EXTRA_TITLE = "SONG_TITLE";
+    public static final String EXTRA_FAVORITE = "IS_FAVORITE";
+    public static final int REQUEST_FAVORITE = 0;
 
     private Button mDownloadButton;
     private Button mPlayButton;
@@ -98,9 +104,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void testIntents() {
-        Intent intent = new Intent(this, DetailActivity.class);
-        intent.putExtra(EXTRA_TITLE, "Tribute");
-        startActivity(intent);
+        //Intent intent = new Intent(this, DetailActivity.class);
+        //intent.putExtra(EXTRA_TITLE, "Tribute");
+        //startActivityForResult(intent, REQUEST_FAVORITE);
+
+        //Implicit intent
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        Uri geoLocation = Uri.parse("geo:0,0?q=41.682108, -111.856089(Home)");
+        intent.setData(geoLocation);
+        if (intent.resolveActivity(getPackageManager()) == null) {
+            //handle the error
+        } else {
+            startActivity(intent);
+        }
+
     }
 
     private void downloadSongs() {
@@ -108,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
         //Send Messages to Handler for processing
         for(Song song : Playlist.songs){
             Intent intent = new Intent(MainActivity.this, DownloadIntentService.class);
-            intent.putExtra(KEY_SONG, song);
+            intent.putExtra(EXTRA_SONG, song);
             startService(intent);
         }
     }
@@ -129,5 +146,19 @@ public class MainActivity extends AppCompatActivity {
         super.onStop();
         if(mBound) unbindService(mServiceConn);
         mBound = false;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+        if(requestCode == REQUEST_FAVORITE){
+            if(resultCode == RESULT_OK){
+                boolean result = intent.getBooleanExtra(EXTRA_FAVORITE, false);
+                Log.i(TAG, "Is favorite? " + result);
+                int position = intent.getIntExtra(EXTRA_LIST_POSITION, 0);
+                Playlist.songs[position].setIsFavorite(result);
+                mAdapter.notifyItemChanged(position);
+            }
+        }
     }
 }

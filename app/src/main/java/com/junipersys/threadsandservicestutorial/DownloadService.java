@@ -22,7 +22,7 @@ public class DownloadService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        String song = intent.getStringExtra(MainActivity.KEY_SONG);
+        String song = intent.getStringExtra(MainActivity.EXTRA_SONG);
         Message message = Message.obtain();
         message.obj = song;
         message.arg1 = startId;
