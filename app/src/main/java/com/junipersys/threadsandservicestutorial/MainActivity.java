@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,17 +22,22 @@ public class MainActivity extends AppCompatActivity {
     private Button mDownloadButton;
     private Button mPlayButton;
     private Boolean mBound = false;
-    private PlayerService mPlayerService;
+    private Messenger mServiceMessenger;
+    private Messenger mActivityMessenger = new Messenger(new ActivityHandler(this));
 
     private ServiceConnection mServiceConn = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder binder) {
             mBound = true;
-            PlayerService.LocalBinder localBinder = (PlayerService.LocalBinder) binder;
-            mPlayerService = localBinder.getService();
-
-            if(mPlayerService.isPlaying()){
-                mPlayButton.setText("PAUSE");
+            mServiceMessenger = new Messenger(binder);
+            Message message = Message.obtain();
+            message.arg1 = 2;
+            message.arg2 = 1;
+            message.replyTo = mActivityMessenger;
+            try {
+                mServiceMessenger.send(message);
+            } catch (RemoteException e) {
+                e.printStackTrace();
             }
         }
 
@@ -65,17 +72,22 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(mBound){
-                    if(mPlayerService.isPlaying()){
-                        mPlayerService.pause();
-                        mPlayButton.setText("PLAY");
-                    } else {
-                        mPlayerService.play();
-                        mPlayButton.setText("PAUSE");
-                        mPlayerService.startService(new Intent(MainActivity.this, PlayerService.class));
+                    startService(new Intent(MainActivity.this, PlayerService.class));
+                    Message message = Message.obtain();
+                    message.arg1 = 2;
+                    message.replyTo = mActivityMessenger;
+                    try {
+                        mServiceMessenger.send(message);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
                     }
                 }
             }
         });
+    }
+
+    public void changPlayButtonText(String text){
+        mPlayButton.setText(text);
     }
 
     @Override
