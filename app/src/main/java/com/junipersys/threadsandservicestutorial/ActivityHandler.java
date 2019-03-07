@@ -2,7 +2,6 @@ package com.junipersys.threadsandservicestutorial;
 
 import android.os.Handler;
 import android.os.Message;
-import android.os.Messenger;
 import android.os.RemoteException;
 
 public class ActivityHandler extends Handler {
